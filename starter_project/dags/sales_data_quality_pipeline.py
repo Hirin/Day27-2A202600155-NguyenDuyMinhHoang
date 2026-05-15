@@ -5,14 +5,20 @@ from pathlib import Path
 import sys
 
 try:
-    from airflow import DAG
-    from airflow.operators.python import PythonOperator
+    from airflow.sdk import DAG
+    from airflow.providers.standard.operators.python import PythonOperator
 except ImportError:  # pragma: no cover
     DAG = None
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.append(str(PROJECT_ROOT))
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv(PROJECT_ROOT / ".env")
+except ImportError:
+    pass
 
 
 def validate_orders_task() -> dict:
