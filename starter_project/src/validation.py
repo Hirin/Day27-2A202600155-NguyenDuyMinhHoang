@@ -3,7 +3,8 @@ from __future__ import annotations
 import csv
 import json
 from pathlib import Path
-from urllib import request
+
+import requests
 
 from src.config import DISCORD_WEBHOOK_URL, OUTPUT_DIR, VALID_STATUSES
 
@@ -70,16 +71,14 @@ def send_discord_message(summary: dict[str, int | str], webhook_url: str = DISCO
         f"Invalid amounts: {summary['invalid_amounts']}\n"
         f"Invalid statuses: {summary['invalid_statuses']}"
     )
-    payload = json.dumps({"content": message}).encode("utf-8")
-    http_request = request.Request(
+    response = requests.post(
         webhook_url,
-        data=payload,
+        json={"content": message},
         headers={"Content-Type": "application/json"},
-        method="POST",
+        timeout=15,
     )
-    with request.urlopen(http_request, timeout=15) as response:
-        if response.status >= 400:
-            raise RuntimeError(f"Discord webhook failed with status {response.status}")
+    if response.status_code >= 400:
+        raise RuntimeError(f"Discord webhook failed with status {response.status_code}")
 
 
 def run_lab_check(

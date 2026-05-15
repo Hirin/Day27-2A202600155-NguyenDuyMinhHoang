@@ -4,10 +4,14 @@ import argparse
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.append(str(PROJECT_ROOT))
+
+load_dotenv(PROJECT_ROOT / ".env")
 
 from src.validation import LabValidationError, run_lab_check
 
